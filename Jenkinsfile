@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "college-management"
         DOCKER_CONTAINER = "college-app"
-        DOCKER_PORT = "8082"   // Change this if you want a different port
+        DOCKER_PORT = "8082"
     }
 
     stages {
@@ -25,10 +25,8 @@ pipeline {
         stage('Stop Old Container') {
             steps {
                 echo "🛑 Stopping old container if exists..."
-                // Stop container if running
-                bat "for /f \"tokens=*\" %%i in ('docker ps -q --filter name=%DOCKER_CONTAINER%') do docker stop %%i"
-                // Remove old container if exists
-                bat "for /f \"tokens=*\" %%i in ('docker ps -a -q --filter name=%DOCKER_CONTAINER%') do docker rm %%i"
+                bat "for /f \"tokens=*\" %%i in ('docker ps -q --filter \"name=%DOCKER_CONTAINER%\"') do docker stop %%i"
+                bat "for /f \"tokens=*\" %%i in ('docker ps -a -q --filter \"name=%DOCKER_CONTAINER%\"') do docker rm %%i"
             }
         }
 
