@@ -25,8 +25,20 @@ pipeline {
         stage('Stop Old Container') {
             steps {
                 echo "🛑 Stopping old container if exists..."
-                bat "for /f \"tokens=*\" %%i in ('docker ps -q --filter \"name=%DOCKER_CONTAINER%\"') do docker stop %%i"
-                bat "for /f \"tokens=*\" %%i in ('docker ps -a -q --filter \"name=%DOCKER_CONTAINER%\"') do docker rm %%i"
+                bat """
+                @echo off
+                set CONTAINER_ID=
+                for /f "tokens=*" %%i in ('docker ps -q --filter "name=%DOCKER_CONTAINER%"') do set CONTAINER_ID=%%i
+                if not "%CONTAINER_ID%"=="" (
+                    docker stop %CONTAINER_ID%
+                )
+                set CONTAINER_ID=
+                for /f "tokens=*" %%i in ('docker ps -a -q --filter "name=%DOCKER_CONTAINER%"') do set CONTAINER_ID=%%i
+                if not "%CONTAINER_ID%"=="" (
+                    docker rm %CONTAINER_ID%
+                )
+                exit /b 0
+                """
             }
         }
 
